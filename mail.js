@@ -7,34 +7,43 @@ const app = express();
 
 // Middleware
 
+app.use(cors());
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // List of allowed origins
-    const allowedOrigins = [
-      'https://ayurved-a0e30.web.app',
-      'http://localhost:3000',
-      'https://localhost:3000' // Added https for localhost
-    ];
+// Alternative explicit configuration for all origins
+// app.use(cors({
+//   origin: '*',
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+// }));
+
+// Handle preflight requests for all routes
+app.options('*', cors())
+
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     // List of allowed origins
+//     const allowedOrigins = [
+//       'https://ayurved-a0e30.web.app',
+//       'http://localhost:3000',
+//       'https://localhost:3000' // Added https for localhost
+//     ];
     
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+//     // Allow requests with no origin (like mobile apps or curl requests)
+//     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allow cookies if needed
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-};
+//     if (allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true, // Allow cookies if needed
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+// };
 
 // Middleware
-app.use(cors(corsOptions));
 
-app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Set SendGrid API Key
