@@ -793,6 +793,63 @@ Mediconnect
 
   return text;
 };
+
+
+//FOR PAYMENTS
+
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+app.post('/api/create-razorpay-order', async (req, res) => {
+  try {
+    const { amount, currency } = req.body;
+
+    const options = {
+      amount: amount,
+      currency: currency,
+      receipt: `receipt_${Date.now()}`,
+    };
+
+    const order = await razorpay.orders.create(options);
+    
+    res.json({
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency
+    });
+  } catch (error) {
+    console.error('Error creating order:', error);
+    res.status(500).json({ error: 'Failed to create order' });
+  }
+});
+
+const crypto = require('crypto');
+
+app.post('/api/verify-payment', async (req, res) => {
+  try {
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest('hex');
+
+    const isAuthentic = expectedSignature === razorpay_signature;
+
+    if (isAuthentic) {
+      res.json({ success: true, paymentId: razorpay_payment_id });
+    } else {
+      res.status(400).json({ success: false, error: 'Invalid signature' });
+    }
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    res.status(500).json({ success: false, error: 'Verification failed' });
+  }
+});
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
