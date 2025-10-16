@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const sgMail = require('@sendgrid/mail');
+const Razorpay = require('razorpay');
 require('dotenv').config();
 
 const app = express();
