@@ -866,35 +866,36 @@ const Razorpay = require('razorpay');
 require('dotenv').config();
 
 const app = express();
-
+app.use(cors());
 // Middleware
-const corsOptions = {
-  origin: function (origin, callback) {
-    // List of allowed origins
-    const allowedOrigins = [
-      'https://ayurved-a0e30.web.app',
-      'http://localhost:3000',
-      'https://localhost:3000',
-      'https://ayushportal.com'
+app.options('*', cors())
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     // List of allowed origins
+//     const allowedOrigins = [
+//       'https://ayurved-a0e30.web.app',
+//       'http://localhost:3000',
+//       'https://localhost:3000',
+//       'https://ayushportal.com'
 
-    ];
+//     ];
     
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+//     // Allow requests with no origin (like mobile apps or curl requests)
+//     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-};
+//     if (allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+// };
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+// app.use(cors(corsOptions));
+// app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Email aliases configuration
