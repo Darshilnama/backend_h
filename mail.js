@@ -869,33 +869,7 @@ const app = express();
 app.use(cors());
 // Middleware
 app.options('*', cors())
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     // List of allowed origins
-//     const allowedOrigins = [
-//       'https://ayurved-a0e30.web.app',
-//       'http://localhost:3000',
-//       'https://localhost:3000',
-//       'https://ayushportal.com'
 
-//     ];
-    
-//     // Allow requests with no origin (like mobile apps or curl requests)
-//     if (!origin) return callback(null, true);
-    
-//     if (allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-// };
-
-// app.use(cors(corsOptions));
-// app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Email aliases configuration
@@ -908,18 +882,43 @@ const EMAIL_ALIASES = {
 };
 
 // Nodemailer configuration for Hostinger
+// const createTransporter = () => {
+//   return nodemailer.createTransport({
+//     host: process.env.HOSTINGER_SMTP_HOST || 'smtp.hostinger.com',
+//     port: process.env.HOSTINGER_SMTP_PORT || 465,
+//     secure: true,
+//     auth: {
+//       user: process.env.HOSTINGER_EMAIL,
+//       pass: process.env.HOSTINGER_EMAIL_PASSWORD,
+//     },
+//     tls: {
+//       rejectUnauthorized: false
+//     }
+//   });
+// };
 const createTransporter = () => {
   return nodemailer.createTransport({
     host: process.env.HOSTINGER_SMTP_HOST || 'smtp.hostinger.com',
-    port: process.env.HOSTINGER_SMTP_PORT || 465,
+    port: parseInt(process.env.HOSTINGER_SMTP_PORT) || 465,
     secure: true,
     auth: {
       user: process.env.HOSTINGER_EMAIL,
       pass: process.env.HOSTINGER_EMAIL_PASSWORD,
     },
+    // Enhanced connection settings
+    connectionTimeout: 30000, // 30 seconds
+    greetingTimeout: 30000,
+    socketTimeout: 60000, // 60 seconds
+    // TLS settings
     tls: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false, // Bypass certificate validation issues
+      minVersion: 'TLSv1.2' // Force TLS 1.2 or higher
+    },
+    // Pooling for better performance
+    pool: true,
+    maxConnections: 5,
+    maxMessages: 100,
+    
   });
 };
 
